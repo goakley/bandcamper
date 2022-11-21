@@ -66,8 +66,10 @@ jobs:
     strategy: 
       matrix:
         target:
-          - x86_64-pc-windows-gnu
-          - x86_64-unknown-linux-gnu
+          - target: x86_64-pc-windows-gnu
+            extension: ".exe"
+          - target: x86_64-unknown-linux-gnu
+            extension: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -77,21 +79,20 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
-          target: ${{ matrix.target }}
+          target: ${{ matrix.target.target }}
       - name: Build target
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --release --target ${{ matrix.target }}
+          args: --release --target ${{ matrix.target.target }}
       - name: Package
         shell: bash
         run: |
-          cd target/${{ matrix.target }}/release
-          cp bandcamper ../../../bandcamper-${{ matrix.target }}
-          cd -
+          cp target/${{ matrix.target.target }}/release/bandcamper${{ matrix.target.extension }} bandcamper-${{ matrix.target.target }}${{ matrix.target.extension }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          files: 'bandcamper-*'
+          files: bandcamper-${{ matrix.target.target }}${{ matrix.target.extension }}
+          fail_on_unmatched_files: true
