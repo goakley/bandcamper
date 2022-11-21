@@ -2,6 +2,9 @@
 
 # Bandcamper
 
+<a href="https://github.com/goakley/bandcamper/actions?query=branch%3Amain"><img src="https://img.shields.io/github/workflow/status/goakley/bandcamper/CI/main" /></a>
+<img src="https://img.shields.io/github/license/goakley/bandcamper" />
+
 Bandcamper is a tool for syncing your [Bandcamp](https://bandcamp.com/) music collection to your computer.
 
 ## Usage
