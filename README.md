@@ -1,4 +1,4 @@
-<img style="height:128px;" height=128 src="LOGO.svg" alt="bandcamper logo" />
+<img style="height:64px;" height=64 src="LOGO.svg" alt="bandcamper logo" />
 
 # Bandcamper
 
@@ -6,6 +6,8 @@
 <img src="https://img.shields.io/github/license/goakley/bandcamper" />
 
 Bandcamper is a tool for syncing your [Bandcamp](https://bandcamp.com/) music collection to your computer.
+
+<img style="height:300px;" height=300 src="image.png" alt="example of a downloaded bandcamp collection" />
 
 ## Usage
 
