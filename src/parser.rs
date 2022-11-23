@@ -233,7 +233,7 @@ mod tests {
         ];
         for (size, token) in tokens.into_iter() {
             assert_de_tokens(
-                &MBTest { size: size },
+                &MBTest { size },
                 &[
                     Token::Struct {
                         name: "MBTest",

@@ -135,7 +135,7 @@ fn load_bandcamp_cookies() -> Vec<(String, String, Downloader)> {
     bandcamp_cookies.sort_by_key(|is| is.iter().map(|i| i.last_accessed).max());
     bandcamp_cookies
         .into_iter()
-        .map(|cookies| {
+        .filter_map(|cookies| {
             let header_values: Vec<reqwest::header::HeaderValue> = cookies
                 .iter()
                 .map(|i| {
@@ -153,7 +153,6 @@ fn load_bandcamp_cookies() -> Vec<(String, String, Downloader)> {
                 .ok()
                 .map(|(a, b)| (a, b, downloader))
         })
-        .flatten()
         .collect()
 }
 
@@ -345,9 +344,9 @@ mod tests {
         missing.insert("file2.flac".into());
         for entry in dir.join("My CR").join("Abc 123").read_dir().unwrap() {
             let name = entry.unwrap().file_name();
-            assert_eq!(missing.remove(&name), true);
+            assert!(missing.remove(&name));
         }
-        assert_eq!(missing.is_empty(), true);
+        assert!(missing.is_empty());
         let mut bad_media_download = MockBadMediaDownload {
             filename: "track.flac".to_string(),
         };
@@ -383,9 +382,9 @@ mod tests {
         missing.insert("track.flac".into());
         for entry in dir.join("Boopers").read_dir().unwrap() {
             let name = entry.unwrap().file_name();
-            assert_eq!(missing.remove(&name), true);
+            assert!(missing.remove(&name));
         }
-        assert_eq!(missing.is_empty(), true);
+        assert!(missing.is_empty());
         let mut bad_media_download = MockBadMediaDownload {
             filename: "track.flac".to_string(),
         };

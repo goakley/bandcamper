@@ -81,7 +81,7 @@ impl Downloader {
     }
 
     pub fn get_media(&self, url: &str) -> Result<ReqwestMediaDownload, GetMediaError> {
-        let mut response = self
+        let response = self
             .client
             .get(url)
             .timeout(MEDIA_TIMEOUT)
