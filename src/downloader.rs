@@ -93,8 +93,8 @@ impl Downloader {
         let content_disposition = match content_disposition_x {
             Some(cd) => Ok(cd),
             _ => {
-                let mut fff = std::fs::File::create("/tmp/error.html").unwrap();
-                response.copy_to(&mut fff).unwrap();
+                // let mut fff = std::fs::File::create("/tmp/error.html").unwrap();
+                // response.copy_to(&mut fff).unwrap();
                 Err(GetMediaError::NoContentDisposition(format!(
                     "{:?}",
                     &response.headers()

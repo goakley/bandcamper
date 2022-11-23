@@ -211,6 +211,9 @@ fn main() {
     let file_manager = FileManager {
         root_directory: settings.path.into(),
     };
+    if !file_manager.root_directory.exists() {
+        std::fs::create_dir(&file_manager.root_directory).unwrap();
+    }
     let (collection_link, downloader) = get_collection_link(settings.username).unwrap();
     let collection_page = downloader
         .get_page(&collection_link)
@@ -256,10 +259,10 @@ fn main() {
             .unwrap()
             .text()
             .unwrap();
-        std::fs::File::create("/tmp/item.html")
-            .unwrap()
-            .write_all(contents.as_bytes())
-            .unwrap();
+        // std::fs::File::create("/tmp/item.html")
+        //     .unwrap()
+        //     .write_all(contents.as_bytes())
+        //     .unwrap();
         let download_options = parse_download_page(&contents).unwrap();
         let download_option = pick_format(&format_preferences, &download_options).unwrap();
         println!(
