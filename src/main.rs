@@ -19,7 +19,8 @@ struct Args {
     #[arg(short = 'u', long = "username")]
     username: Option<String>,
 
-    path: std::ffi::OsString,
+    /// The folder in which to save the music
+    path: Option<std::ffi::OsString>,
 }
 
 fn pick_format<'a>(
@@ -207,9 +208,18 @@ fn main() {
     println!("Loading configuration settings");
     let settings = Args::parse();
     let format_preferences = vec![settings.format];
-    let file_manager = FileManager {
-        root_directory: settings.path.into(),
+    let root_directory = match settings.path {
+        Some(p) => p.into(),
+        None => {
+            println!("No download folder was specified when starting the program.");
+            println!("Please select a folder in which you want to download your music.");
+            let folder = rfd::FileDialog::new()
+                .set_title("Bandcamp Downloads Folder")
+                .pick_folder();
+            folder.expect("No folder selected")
+        }
     };
+    let file_manager = FileManager { root_directory };
     if !file_manager.root_directory.exists() {
         std::fs::create_dir(&file_manager.root_directory).unwrap();
     }
