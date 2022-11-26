@@ -13,6 +13,7 @@ use crate::parser::*;
 use crate::types::*;
 
 #[derive(Parser)]
+#[command(author, version, about)]
 struct Args {
     #[arg(short='f', long="format", default_value_t = Encoding::Flac)]
     format: Encoding,
@@ -206,33 +207,12 @@ fn get_collection_link(username: Option<String>) -> Option<(String, Downloader)>
     }
 }
 
-fn main_impl() {
-    println!("Loading configuration settings");
-    let settings = Args::parse();
-    let format_preferences = vec![settings.format];
-    let root_directory = match settings.path {
-        Some(p) => p.into(),
-        None => {
-            println!("No download folder was specified when starting the program.");
-            println!("Please select a folder in which you want to download your music.");
-            let folder = rfd::FileDialog::new()
-                .set_title("Bandcamp Downloads Folder")
-                .pick_folder();
-            folder.expect("No folder selected")
-        }
-    };
-    let file_manager = FileManager { root_directory };
-    if !file_manager.root_directory.exists() {
-        std::fs::create_dir(&file_manager.root_directory).unwrap();
-    }
-    println!("Scanning for Bandcamp collection data...");
-    let (collection_link, downloader) = get_collection_link(settings.username).unwrap();
+fn process_collection_link(downloader: &Downloader, collection_link: &str) -> Vec<CollectionItem> {
     let collection_page = downloader
-        .get_page(&collection_link)
+        .get_page(collection_link)
         .unwrap()
         .text()
         .unwrap();
-    println!("Checking for collection items...");
     let collection_page_data = parse_collection_page(&collection_page).unwrap();
     let fan_id = collection_page_data.fan_id;
     let mut all_collection_items: Vec<CollectionItem> = collection_page_data.collection_items;
@@ -257,7 +237,31 @@ fn main_impl() {
         older_than_token = collection_data.last_token;
         more_available = collection_data.more_available;
     }
-    for item in all_collection_items.iter() {
+    all_collection_items
+}
+
+fn main_impl() {
+    let settings = Args::parse();
+    let format_preferences = vec![settings.format];
+    let root_directory = match settings.path {
+        Some(p) => p.into(),
+        None => {
+            println!("No download folder was specified when starting the program.");
+            println!("Please select a folder in which you want to download your music.");
+            let folder = rfd::FileDialog::new()
+                .set_title("Bandcamp Downloads Folder")
+                .pick_folder();
+            folder.expect("No folder selected")
+        }
+    };
+    let file_manager = FileManager { root_directory };
+    if !file_manager.root_directory.exists() {
+        std::fs::create_dir(&file_manager.root_directory).unwrap();
+    }
+    println!("Scanning for Bandcamp collection data...");
+    let (collection_link, downloader) = get_collection_link(settings.username).unwrap();
+    let collection_items = process_collection_link(&downloader, &collection_link);
+    for item in collection_items.iter() {
         println!(
             "Processing item: {:?} \"{}\" by \"{}\"",
             item.itype, item.title, item.artist
@@ -272,10 +276,6 @@ fn main_impl() {
             .unwrap()
             .text()
             .unwrap();
-        // std::fs::File::create("/tmp/item.html")
-        //     .unwrap()
-        //     .write_all(contents.as_bytes())
-        //     .unwrap();
         let download_options = parse_download_page(&contents).unwrap();
         let download_option = pick_format(&format_preferences, &download_options).unwrap();
         println!(
