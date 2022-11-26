@@ -13,8 +13,10 @@ Bandcamper is a tool for syncing your [Bandcamp](https://bandcamp.com/) music co
 
 Either download a [pre-built version of the tool](https://github.com/goakley/bandcamper/releases/) or build the executable yourself (see below).
 
-The tool is run through the command line interface.
-The simplest way to run the tool is to give it the folder in which you want to save your music:
+The simplest way to run the tool is to execute it directly (either by clicking it or through the command line).
+This will prompt you to pick the folder in which you want to download your music.
+
+If you want to run the program in an environment with no GUI, pass the path to your music folder as the first argument to the program:
 
 * On Windows: `bandcamper %USERPROFILE%\Music\Bandcamp`
 * On Mac / Linux: `bandcamper ~/Music/Bandcamp`
