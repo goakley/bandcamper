@@ -163,6 +163,7 @@ fn get_collection_link(username: Option<String>) -> Option<(String, Downloader)>
         (_, []) => {
             println!("You are not logged into Bandcamp through your web browser.");
             println!("Please log in at https://bandcamp.com/login, and then try running this program again.");
+            println!("Supported browsers are: Chrome/Chromium, Edge, Firefox");
             None
         }
         (Some(usr), [(u, c, d)]) => {
@@ -197,6 +198,7 @@ fn get_collection_link(username: Option<String>) -> Option<(String, Downloader)>
                     usr
                 );
                 println!("Please log in at https://bandcamp.com/login, and then try running this program again.");
+                println!("Supported browsers are: Chrome/Chromium, Edge, Firefox");
                 None
             }
             Some((_, c, d)) => Some((c.to_string(), d.clone())),
@@ -204,7 +206,7 @@ fn get_collection_link(username: Option<String>) -> Option<(String, Downloader)>
     }
 }
 
-fn main() {
+fn main_impl() {
     println!("Loading configuration settings");
     let settings = Args::parse();
     let format_preferences = vec![settings.format];
@@ -223,12 +225,14 @@ fn main() {
     if !file_manager.root_directory.exists() {
         std::fs::create_dir(&file_manager.root_directory).unwrap();
     }
+    println!("Scanning for Bandcamp collection data...");
     let (collection_link, downloader) = get_collection_link(settings.username).unwrap();
     let collection_page = downloader
         .get_page(&collection_link)
         .unwrap()
         .text()
         .unwrap();
+    println!("Checking for collection items...");
     let collection_page_data = parse_collection_page(&collection_page).unwrap();
     let fan_id = collection_page_data.fan_id;
     let mut all_collection_items: Vec<CollectionItem> = collection_page_data.collection_items;
@@ -281,6 +285,17 @@ fn main() {
         let mut media_download = downloader.get_media(&download_option.url).unwrap();
         handle_download_response(&file_manager, item, &mut media_download).unwrap();
         println!("  Finished processing item");
+    }
+}
+
+fn main() {
+    match std::panic::catch_unwind(|| {
+        main_impl();
+    }) {
+        Ok(_) => {}
+        Err(_) => {
+            std::thread::sleep(std::time::Duration::new(10, 0));
+        }
     }
 }
 
