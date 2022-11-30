@@ -96,14 +96,22 @@ jobs:
           #   deps: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
           #   releaser: "zip -j bandcamper-linux-x64.zip target/x86_64-unknown-linux-gnu/release/bandcamper"
           #   releasefile: "bandcamper-linux-x64.zip"
-          - on: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            deps: "sudo dpkg --add-architecture arm64 && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-aarch64-linux-gnu libssl-dev:arm64 libzstd-dev:arm64 libgtk-3-dev:arm64 -y"
-            releaser: "zip -j bandcamper-linux-arm64.zip target/aarch64-unknown-linux-gnu/release/bandcamper"
-            releasefile: "bandcamper-linux-arm64.zip"
+          # TODO: fix this one
+          # - on: ubuntu-latest
+          #   target: aarch64-unknown-linux-gnu
+          #   deps: "sudo dpkg --add-architecture arm64 && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-aarch64-linux-gnu libssl-dev:arm64 libzstd-dev:arm64 libgtk-3-dev:arm64 -y"
+          #   releaser: "zip -j bandcamper-linux-arm64.zip target/aarch64-unknown-linux-gnu/release/bandcamper"
+          #   releasefile: "bandcamper-linux-arm64.zip"
           - on: ubuntu-latest
             target: armv7-unknown-linux-gnueabihf
-            deps: "sudo dpkg --add-architecture armhf && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y"
+            # deps: "sudo dpkg --add-architecture armhf && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y"
+            deps: >
+              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal main multiverse restricted' | tee /etc/apt/sources.list.d/ports.list &&
+              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main multiverse restricted universe' | tee /etc/apt/sources.list.d/ports.list &&
+              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main universe' | tee /etc/apt/sources.list.d/ports.list &&
+              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-security main multiverse restricted universe' | tee /etc/apt/sources.list.d/ports.list &&
+              sudo apt-get update &&
+              DEBIAN_FRONTEND=noninteractive apt-get install gcc-aarch64-linux-gnu libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y
             releaser: "zip -j bandcamper-linux-armhf.zip target/armv7-unknown-linux-gnueabihf/release/bandcamper"
             releasefile: "bandcamper-linux-armhf.zip"
           # - on: macos-latest
