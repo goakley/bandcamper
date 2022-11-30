@@ -164,7 +164,9 @@ fn get_collection_link(username: Option<String>) -> Option<(String, Downloader)>
         (_, []) => {
             println!("You are not logged into Bandcamp through your web browser.");
             println!("Please log in at https://bandcamp.com/login, and then try running this program again.");
-            println!("Supported browsers are: Chrome/Chromium, Edge, Firefox");
+            println!(
+                "I support most common browsers (Chrome/Chromium, Edge, Firefox, Safari, ...)"
+            );
             None
         }
         (Some(usr), [(u, c, d)]) => {

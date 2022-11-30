@@ -1,12 +1,12 @@
 [package]
 name = "bandcamper"
-version = "1.2.0"
+version = "1.2.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bench_scraper = { version = "0.3.0", features = ["reqwest"] }
+bench_scraper = { version = "0.4.0", features = ["reqwest"] }
 clap = { version = "4.0.22", features = ["derive"] }
 json_dotpath = "1.1.0"
 lazy_static = "1.4.0"
