@@ -12,100 +12,133 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  style:
-    name: Check Style
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('Cargo.lock') }}
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt
-          override: true
-      - name: cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-      - name: Install dependencies
-        run: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
-      - name: cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-  test:
-    name: Run Tests
-    needs: [style]
-    strategy:
-      matrix:
-        target:
-          - on: ubuntu-latest
-            deps: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
-          - on: macos-latest
-            deps: "echo ok"
-          - on: windows-latest
-            deps: "echo ok"
-    runs-on: "${{ matrix.target.on }}"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
-      - name: Install dependencies
-        run: "${{ matrix.target.deps }}"
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all --all-features
+  # style:
+  #   name: Check Style
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Cache
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cargo/bin/
+  #           ~/.cargo/registry/index/
+  #           ~/.cargo/registry/cache/
+  #           ~/.cargo/git/db/
+  #           target/
+  #         key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('Cargo.lock') }}
+  #     - name: Install rust
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: stable
+  #         components: rustfmt
+  #         override: true
+  #     - name: cargo fmt
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: fmt
+  #         args: --all -- --check
+  #     - name: Install dependencies
+  #       run: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
+  #     - name: cargo clippy
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: clippy
+  # test:
+  #   name: Run Tests
+  #   needs: [style]
+  #   strategy:
+  #     matrix:
+  #       target:
+  #         - on: ubuntu-latest
+  #           deps: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
+  #         - on: macos-latest
+  #           deps: "echo ok"
+  #         - on: windows-latest
+  #           deps: "echo ok"
+  #   runs-on: "${{ matrix.target.on }}"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Cache
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cargo/bin/
+  #           ~/.cargo/registry/index/
+  #           ~/.cargo/registry/cache/
+  #           ~/.cargo/git/db/
+  #           target/
+  #         key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
+  #     - name: Install dependencies
+  #       run: "${{ matrix.target.deps }}"
+  #     - name: Install rust
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: stable
+  #         profile: minimal
+  #         override: true
+  #     - name: Test
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: test
+  #         args: --all --all-features
   release:
     name: Release
-    needs: [test]
-    if: startsWith(github.ref, 'refs/tags/')
+    # needs: [test]
+    # if: startsWith(github.ref, 'refs/tags/')
     strategy:
       matrix:
         target:
+          # - on: ubuntu-latest
+          #   target: x86_64-unknown-linux-gnu
+          #   deps: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
+          #   cross: false
+          #   releaser: "zip -j bandcamper-linux-x64.zip target/x86_64-unknown-linux-gnu/release/bandcamper"
+          #   releasefile: "bandcamper-linux-x64.zip"
+          # TODO: fix this one
+          # - on: ubuntu-latest
+          #   target: aarch64-unknown-linux-gnu
+          #   deps: "sudo dpkg --add-architecture arm64 && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-aarch64-linux-gnu libssl-dev:arm64 libzstd-dev:arm64 libgtk-3-dev:arm64 -y"
+          #   cross: true
+          #   releaser: "zip -j bandcamper-linux-arm64.zip target/aarch64-unknown-linux-gnu/release/bandcamper"
+          #   releasefile: "bandcamper-linux-arm64.zip"
           - on: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            deps: "sudo apt-get update && sudo apt-get install -y libatk1.0-dev libgtk-3-dev"
-            releaser: "zip -j bandcamper-linux-x64.zip target/x86_64-unknown-linux-gnu/release/bandcamper"
-            releasefile: "bandcamper-linux-x64.zip"
-          - on: macos-latest
-            target: x86_64-apple-darwin
+            target: armv7-unknown-linux-gnueabihf
+            # deps: "sudo dpkg --add-architecture armhf && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y"
+            # DEBIAN_FRONTEND=noninteractive sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf dconf-gsettings-backend:armhf gir1.2-gtk-3.0:armhf libatk1.0-dev:armhf libatk-bridge2.0-dev:armhf libcairo2-dev:armhf libegl1-mesa-dev:armhf libepoxy-dev:armhf libfontconfig1-dev:armhf libfribidi-dev:armhf libgdk-pixbuf2.0-dev:armhf libglib2.0-dev:armhf libgtk-3-0:armhf libpango1.0-dev:armhf libssl1.1:armhf libwayland-dev:armhf libx11-dev:armhf libxcomposite-dev:armhf libxcursor-dev:armhf libxdamage-dev:armhf libxext-dev:armhf libxfixes-dev:armhf libxi-dev:armhf libxinerama-dev:armhf libxkbcommon-dev:armhf libxrandr-dev:armhf libzstd1:armhf gir1.2-atk-1.0:armhf gir1.2-freedesktop:armhf gir1.2-gdkpixbuf-2.0:armhf gir1.2-glib-2.0:armhf gir1.2-pango-1.0:armhf libatk1.0-0:armhf libatk-bridge2.0-0:armhf libatspi2.0-dev:armhf libc6:armhf libcairo2:armhf libcairo-gobject2:armhf libcairo-script-interpreter2:armhf libcolord2:armhf libcups2:armhf libdconf1:armhf libegl-dev:armhf libepoxy0:armhf libexpat1-dev:armhf libffi-dev:armhf libfontconfig1:armhf libfreetype6:armhf libfreetype6-dev:armhf libfribidi0:armhf libgdk-pixbuf2.0-0:armhf libgl1-mesa-dev:armhf libglib2.0-0:armhf libglvnd-dev:armhf libharfbuzz0b:armhf libharfbuzz-dev:armhf libjson-glib-1.0-0:armhf libmount-dev:armhf libpango-1.0-0:armhf libpangocairo-1.0-0:armhf libpangoft2-1.0-0:armhf libpangoxft-1.0-0:armhf libpcre3-dev:armhf libpixman-1-dev:armhf libpng-dev:armhf librest-0.7-0:armhf libselinux1-dev:armhf libsm-dev:armhf libthai-dev:armhf libwayland-client0:armhf libwayland-cursor0:armhf libwayland-egl1:armhf libwayland-server0:armhf libx11-6:armhf libxau-dev:armhf libxcb1-dev:armhf libxcb-render0-dev:armhf libxcb-shm0-dev:armhf libxcomposite1:armhf libxcursor1:armhf libxdamage1:armhf libxdmcp-dev:armhf libxext6:armhf libxfixes3:armhf libxft-dev:armhf libxi6:armhf libxinerama1:armhf libxkbcommon0:armhf libxrandr2:armhf libxrender-dev:armhf uuid-dev:armhf zlib1g-dev:armhf libblkid-dev:armhf libc6-dev:armhf libegl1:armhf libexpat1:armhf libffi7:armhf libfreetype-dev:armhf libgcc-s1:armhf libgirepository-1.0-1:armhf libgl-dev:armhf libgles-dev:armhf libglx-dev:armhf libgnutls30:armhf libharfbuzz-icu0:armhf libicu-dev:armhf libmount1:armhf libpcre2-dev:armhf libpcrecpp0v5:armhf libselinux1:armhf libsoup2.4-1:armhf libsoup-gnome2.4-1:armhf libxml2:armhf glib-networking:armhf libgl1:armhf libglx0:armhf libicu66:armhf libpcre2-8-0:armhf libpcre2-posix2:armhf libstdc++6:armhf linux-libc-dev:armhf adwaita-icon-theme:armhf dconf-service:armhf gsettings-desktop-schemas:armhf libdatrie-dev:armhf libdbus-1-dev:armhf libglib2.0-0 libglib2.0-dev-bin:armhf libgtk-3-common:armhf libmount1 libxml2 libxslt1.1 login openssl pkg-config:armhf tzdata:armhf default-dbus-session-bus:armhf dbus:armhf libpam-systemd:armhf systemd:armhf
+            # deps: >
+            #   echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal main multiverse restricted' | sudo tee -a /etc/apt/sources.list.d/ports.list &&
+            #   echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main multiverse restricted universe' | sudo tee -a /etc/apt/sources.list.d/ports.list &&
+            #   echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main universe' | sudo tee -a /etc/apt/sources.list.d/ports.list &&
+            #   echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-security main multiverse restricted universe' | sudo tee -a /etc/apt/sources.list.d/ports.list &&
+            #   sudo apt-get update &&
+            #   sudo apt-get install -y gcc-arm-linux-gnueabihf pkg-config-arm-linux-gnueabihf &&
+            #   sudo apt-get download libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf &&
+            #   sudo dpkg --force-all -i *.deb
             deps: "echo ok"
-            releaser: "zip -j bandcamper-macos-x64.zip target/x86_64-apple-darwin/release/bandcamper"
-            releasefile: "bandcamper-macos-x64.zip"
-          - on: windows-latest
-            target: x86_64-pc-windows-gnu
-            deps: "echo ok"
-            releaser: "'C:\\Program Files\\7-Zip\\7z.exe' a -tzip bandcamper-windows-x64.zip .\\\\target\\\\x86_64-pc-windows-gnu\\\\release\\\\bandcamper.exe"
-            releasefile: "bandcamper-windows-x64.zip"
+            cross: true
+            releaser: "zip -j bandcamper-linux-armhf.zip target/armv7-unknown-linux-gnueabihf/release/bandcamper"
+            releasefile: "bandcamper-linux-armhf.zip"
+          # - on: macos-latest
+          #   target: x86_64-apple-darwin
+          #   deps: "echo ok"
+          #   cross: false
+          #   releaser: "zip -j bandcamper-macos-x64.zip target/x86_64-apple-darwin/release/bandcamper"
+          #   releasefile: "bandcamper-macos-x64.zip"
+          # - on: macos-latest
+          #   target: aarch64-apple-darwin
+          #   deps: "echo ok"
+          #   cross: false
+          #   releaser: "zip -j bandcamper-macos-arm64.zip target/aarch64-apple-darwin/release/bandcamper"
+          #   releasefile: "bandcamper-macos-arm64.zip"
+          # - on: windows-latest
+          #   target: x86_64-pc-windows-gnu
+          #   deps: "echo ok"
+          #   cross: false
+          #   releaser: "'C:\\Program Files\\7-Zip\\7z.exe' a -tzip bandcamper-windows-x64.zip .\\\\target\\\\x86_64-pc-windows-gnu\\\\release\\\\bandcamper.exe"
+          #   releasefile: "bandcamper-windows-x64.zip"
     runs-on: "${{ matrix.target.on }}"
     steps:
       - name: Checkout
@@ -132,15 +165,15 @@ jobs:
       - name: Build target
         uses: actions-rs/cargo@v1
         with:
-          use-cross: false
+          use-cross: ${{ matrix.target.cross }}
           command: build
-          args: --release --target ${{ matrix.target.target }}
+          args: --release --target ${{ matrix.target.target }} --target-dir target-test
       - name: Package
         shell: bash
         run: "${{ matrix.target.releaser }}"
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          files: ${{ matrix.target.releasefile }}
-          fail_on_unmatched_files: true
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     files: ${{ matrix.target.releasefile }}
+      #     fail_on_unmatched_files: true
