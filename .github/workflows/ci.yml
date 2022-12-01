@@ -106,12 +106,12 @@ jobs:
             target: armv7-unknown-linux-gnueabihf
             # deps: "sudo dpkg --add-architecture armhf && sudo apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y"
             deps: >
-              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal main multiverse restricted' | tee /etc/apt/sources.list.d/ports.list &&
-              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main multiverse restricted universe' | tee /etc/apt/sources.list.d/ports.list &&
-              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main universe' | tee /etc/apt/sources.list.d/ports.list &&
-              sudo echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-security main multiverse restricted universe' | tee /etc/apt/sources.list.d/ports.list &&
+              echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal main multiverse restricted' | sudo tee /etc/apt/sources.list.d/ports.list &&
+              echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main multiverse restricted universe' | sudo tee /etc/apt/sources.list.d/ports.list &&
+              echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main universe' | sudo tee /etc/apt/sources.list.d/ports.list &&
+              echo 'deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal-security main multiverse restricted universe' | sudo tee /etc/apt/sources.list.d/ports.list &&
               sudo apt-get update &&
-              DEBIAN_FRONTEND=noninteractive apt-get install gcc-aarch64-linux-gnu libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y
+              DEBIAN_FRONTEND=noninteractive sudo --preserve-env=DEBIAN_FRONTEND apt-get install gcc-aarch64-linux-gnu libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y
             releaser: "zip -j bandcamper-linux-armhf.zip target/armv7-unknown-linux-gnueabihf/release/bandcamper"
             releasefile: "bandcamper-linux-armhf.zip"
           # - on: macos-latest
