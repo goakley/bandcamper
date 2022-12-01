@@ -113,6 +113,8 @@ jobs:
               sudo apt-get update &&
               sudo apt-cache policy gir1.2-gtk-3.0:armhf &&
               sudo apt-cache policy libssl1.1:armhf &&
+              sudo dpkg --get-selections | grep hold &&
+              DEBIAN_FRONTEND=noninteractive sudo --preserve-env=DEBIAN_FRONTEND apt-get install -f -y &&
               DEBIAN_FRONTEND=noninteractive sudo --preserve-env=DEBIAN_FRONTEND apt-get install gcc-aarch64-linux-gnu libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf -y
             releaser: "zip -j bandcamper-linux-armhf.zip target/armv7-unknown-linux-gnueabihf/release/bandcamper"
             releasefile: "bandcamper-linux-armhf.zip"
