@@ -113,7 +113,7 @@ jobs:
               sudo apt-get update &&
               sudo apt-cache policy gir1.2-gtk-3.0:armhf &&
               sudo apt-cache policy libssl1.1:armhf &&
-              DEBIAN_FRONTEND=noninteractive sudo --preserve-env=DEBIAN_FRONTEND aptitude -y gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf
+              DEBIAN_FRONTEND=noninteractive sudo --preserve-env=DEBIAN_FRONTEND apt -y gcc-arm-linux-gnueabihf libssl-dev:armhf libzstd-dev:armhf libgtk-3-dev:armhf
             releaser: "zip -j bandcamper-linux-armhf.zip target/armv7-unknown-linux-gnueabihf/release/bandcamper"
             releasefile: "bandcamper-linux-armhf.zip"
           # - on: macos-latest
