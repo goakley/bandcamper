@@ -101,6 +101,12 @@ jobs:
             deps: "echo ok"
             releaser: "zip -j bandcamper-macos-x64.zip target/x86_64-apple-darwin/release/bandcamper"
             releasefile: "bandcamper-macos-x64.zip"
+          - on: macos-latest
+            target: aarch64-apple-darwin
+            deps: "echo ok"
+            cross: false
+            releaser: "zip -j bandcamper-macos-arm64.zip target/aarch64-apple-darwin/release/bandcamper"
+            releasefile: "bandcamper-macos-arm64.zip"
           - on: windows-latest
             target: x86_64-pc-windows-gnu
             deps: "echo ok"
